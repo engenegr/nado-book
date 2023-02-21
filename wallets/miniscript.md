@@ -1,52 +1,53 @@
 \newpage
-## Script, P2SH, and Miniscript {#sec:miniscript}
+## Script, P2SH и Miniscript {#sec:miniscript}
 
 \EpisodeQR{4}
 
-This chapter will talk about Miniscript and how it makes using Bitcoin Script much easier. It’ll break down how Script works, how you can do more complicated and even absurd things with it, and how Miniscript emerged to make transactions less complicated and more secure. Additionally, it’ll cover what policy language is and how it can make it easier to create scripts.
+В этой главе мы поговорим о Miniscript и о том, как он значительно упрощает использование Bitcoin Script. Мы расскажем, как работает Script, как с его помощью можно делать более сложные и даже абсурдные вещи, и как появился Miniscript, чтобы сделать транзакции менее сложными и более безопасными. Кроме того, в главе будет рассказано о том, какова политика этого языка, и как она может упростить создание сценариев.
 
-### Constraints
+### Ограничения
 
-Scripts are how the Bitcoin blockchain constrains how a given coin can be spent: When you want to receive bitcoin, you tell the person sending it what rules apply to the transaction. For example, with no constraints, anybody can touch whatever’s in your wallet. Usually you would add the constraint that only you can spend these coins. Or, to be more precise, “These coins can only be spent if the transaction includes a signature that’s made with a specific public key, i.e. my key.”
+Скрипты — это о том, как блокчейн Биткоина ограничивает возможности траты некой конкретной монеты: когда вы хотите получить биткоин, вы сообщаете человеку, отправляющему его, какие правила применяются к транзакции. Например, без каких-либо ограничений любой может посмотреть, что находится в вашем кошельке. Обычно вы добавляете ограничение, что только вы можете тратить эти монеты. Или, если быть более точным, «эти монеты могут быть потрачены только в том случае, если транзакция включает в себя подпись, сделанную с помощью определенного открытого ключа, а именно моего ключа».
 
-So you’d tell the person sending bitcoin either your public key or the hash of it. This is what addresses are for, as we explained in chapter @sec:address. Then, they’d put that on the blockchain with a note on it saying that only the owner of that public key can spend the bitcoin.
+Таким образом, вы должны сообщить человеку, отправляющему биткоины, либо ваш открытый ключ, либо его хэш. Для этого и нужны адреса, как мы объясняли в главе @sec:address. Затем отправитель должен поместить их в блокчейн с пометкой о том, что только владелец этого открытого ключа может тратить биткоины.
 
-However, although this is by far the most common type of constraint, there are all sorts of other types of constraints, and you can even specify several different options for the spender, such as “I can spend this, but my mom also needs to sign it. But after two years, maybe I can sign it alone.” In such a scenario, if you want to spend the money, you need to specify which option you’re using and fulfill only the specific criteria for that option.
+Однако, хотя это, безусловно, самый распространенный тип ограничения, существует множество других типов ограничений, и вы даже можете указать несколько различных вариантов для того, кто тратит, например: «Я могу потратить это, но для этого моей маме также нужно подписать транзакцию. Но через два года, может быть, я смогу подписать ее и в одиночку». В таком сценарии, если вы хотите потратить деньги, вам нужно указать, какой вариант вы используете, и выполнить только определенные критерии для этого варианта.
 
-### How Script Works
+### Как работает Script
 
-Script^[<https://en.bitcoin.it/wiki/Script>] is a stack-based language, so think of it like a stack of plates. You can put plates on it, and you can take the top plate off, but you can’t manipulate plates in the middle.
+Script^[<https://en.bitcoin.it/wiki/Script>] — это язык, основанный на стеке, поэтому думайте о нем как о стопке тарелок. На стопку можно ставить тарелки, можно снимать верхнюю тарелку, но нельзя манипулировать тарелками посередине.
 
-A stack works differently than regular memory where you can read and write to arbitrary addresses (such as a hard disk or RAM — random-access memory). A stack is easier to implement and reason about.^[In contrast, Ethereum smart contracts have a stack as well as regular memory and even longterm storage. As a consequence, it’s much more difficult for developers to reason about its behavior. <https://dlt-repo.net/storage-vs-memory-vs-stack-in-solidity-ethereum/>].
+Стек работает иначе, чем обычная память, где вы можете читать и записывать произвольные адреса (например, жесткий диск или ОЗУ — память с произвольным доступом). Стек легче реализовать и представить. ^ [Напротив, смарт-контракты Ethereum имеют стек, а также обычную память и даже долгосрочное хранилище. Как следствие, разработчикам гораздо труднее представлять себе его поведение. <https://dlt-repo.net/storage-vs-memory-vs-stack-in-solidity-ethereum/>].
 
-The most commonly used (before SegWit, see chapter @sec:segwit) Bitcoin Script reads as follows:
+Наиболее часто используемый (до SegWit, см. главу @sec:segwit) биткоин-скрипт выглядит следующим образом:
 
-- `OP_DUP` (as in duplicate)
-- `OP_HASH160` (which takes the SHA-256 hash twice, and then the RIPEMD-160 hash)
-- `pubKeyHash` (the public key hash)
+- `OP_DUP` (как в дубликате)
+- `OP_HASH160` (который дважды берет хэш SHA-256, а затем хэш RIPEMD-160)
+- `pubKeyHash` (хэш приватного ключа)
 - `OP_EQUAL_VERIFY`
 - `OP_CHECKSIG`
 
-The value for `pubKeyHash` is generated by the recipient wallet by performing a double SHA-256 hash followed by RIPEMD-160, and the result is inserted into the above script. As explained in chapter @sec:address, a Bitcoin _address_ only contains the `pubKeyHash`; the rest is implied. It’s actually the sender’s wallet that generates the full script before publishing it on the blockchain.
+Значение для `pubKeyHash` генерируется кошельком получателя путем выполнения двойного хэширования SHA-256, за которым следует RIPEMD-160, и результат вставляется в приведенный выше скрипт. Как объяснялось в главе @sec:address, _биткоин-адрес_ содержит только `pubKeyHash`; остальное подразумевается. На самом деле именно кошелек отправителя генерирует полный скрипт перед его публикацией в блокчейне.
 
-On the blockchain this script ends up in the output of a transaction. The output of a transaction, i.e. a coin, consists of this script that it’s locked with (`scriptPubKey`) and the amount. Now, if you want to spend that, you create a transaction input that instructs the blockchain to add certain things to the stack _before_ the above script is executed.
+В блокчейне этот скрипт заканчивается выходом транзакции. Выход транзакции, то есть монета, состоит из этого скрипта, которым она заблокирована (`scriptPubKey`) и суммы. Теперь, если вы хотите потратить монеты, вы создаете вход транзакции, который дает указание блокчейну добавить определенные вещи в стек _перед_ выполнением вышеприведенного скрипта.
 
-The Bitcoin interpreter will see what you put on the stack, and it’ll start running the program from the output. In this case, what you put on the stack is your signature and your public key, because the original script didn’t have your public key; it had the hash of your public key.
+Интерпретатор Биткоина увидит, что вы поместили в стек, и начнет выполнять программу, начиная с выхода. В этом случае то, что вы помещаете в стек — это ваша подпись и ваш открытый ключ, потому что исходный скрипт не имел вашего открытого ключа; у него был только его хэш.
 
-Continuing with the example from above, we start with a stack that has two plates. The plate at the bottom is your signature, and on top of that is a plate with your public key, and then the script says `OP_DUP`. It pops the stack, i.e. it takes the top element from the stack
- — the top plate, which is the public key — and duplicates it. The original and duplicate are then pushed onto the stack. So now you have two plates with a public key at the top of the stack, and your signature’s still at the bottom.
+Продолжая вышеприведенный пример, мы начнем со стопки, состоящей из двух тарелок. Тарелка внизу это ваша подпись, а сверху тарелка с вашим открытым ключом, а дальше скрипт говорит `OP_DUP`. Это производит операцию pop, т. е. скрипт берет верхний элемент из стека — верхнюю тарелку, которая является открытым ключом — и дублирует его. Затем оригинал и дубликат помещаются в стек. Итак, теперь у вас две тарелки с публичным ключом наверху стека, а ваша подпись по-прежнему внизу.
+  
+Следующая инструкция — «OP_HASH160». Она извлекает один из этих двух дубликатов открытых ключей из стека и хэширует его, а затем помещает этот хэш в стек.
 
-The next instruction is `OP_HASH160`. This pops one of those two duplicated public keys off the stack and hashes it, and then pushes that hash on the stack.
+Подпись все еще внизу, потом публичный ключ, а потом хэш публичного ключа (три тарелки).
 
-The signature is still at the bottom, and then there’s a public key, and then there’s the hash of the public key (three plates).
+Следующая операция — «pubKeyHash», которая помещает хэш вашего открытого ключа в стек. Итак, теперь хэш вашего открытого ключа дважды повторен на вершине стека.
 
-The next operation is `pubKeyHash`, which pushes the hash of your public key on the stack. So now, the hash of your public key occurs twice at the top of the stack.
+Операция OP_EQUAL_VERIFY извлекает оба этих хэша из стека и проверяет, совпадают ли они.
 
-The operation `OP_EQUAL_VERIFY` pops both these hashes of the stack and checks to see if they’re the same.
-
-What’s left on the stack is your signature and your public key, so `OP_CHECKSIG` checks the signature using your public key, and then the stack is empty.
+В стеке остается ваша подпись и ваш открытый ключ, поэтому `OP_CHECKSIG` проверяет подпись с помощью вашего открытого ключа, после чего стек оказывается пустым.
 
 In a nutshell, that’s how a Script program is run, and you can do arbitrarily complicated things along the way.
+
+Именно так, в двух словах, работает программа на языке Script, и в ходе ее выполнения вы можете делать сколь угодно сложные вещи.
 
 ### Script Hash and P2SH
 
