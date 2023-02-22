@@ -45,25 +45,23 @@ Script^[<https://en.bitcoin.it/wiki/Script>] — это язык, основан
 
 В стеке остается ваша подпись и ваш открытый ключ, поэтому `OP_CHECKSIG` проверяет подпись с помощью вашего открытого ключа, после чего стек оказывается пустым.
 
-In a nutshell, that’s how a Script program is run, and you can do arbitrarily complicated things along the way.
-
 Именно так, в двух словах, работает программа на языке Script, и в ходе ее выполнения вы можете делать сколь угодно сложные вещи.
 
 ### Script Hash and P2SH
 
-In general, whenever you want to receive coins from someone, you have to specify exactly what script to use. In the above example, all that’s needed is to provide the hash of the public key in a standardized address format, and the sender wallet creates the correct script.
+В общем, всякий раз, когда вы хотите получить от кого-то монеты, вы должны точно указать, какой скрипт использовать. В приведенном выше примере все, что нужно — это предоставить хэш открытого ключа в стандартном формате адреса, и кошелек отправителя создаст корректный скрипт.
 
-But in the earlier more complicated example, with alternative conditions such as having a parent sign after a few years, communicating this becomes awkward. Even if there was an address standard, it would be a very long address indeed, due to all these different possible constraints.
+Но в более сложном примере, приведенном ранее, с альтернативными условиями, такими как наличие подписи родителя через несколько лет, сообщать об этом становится неудобно. Даже если бы для подобного существовал стандарт адреса, ради учета всех возможных ограничений это был бы чрезвычайно длинный адрес.
 
-Fortunately, there’s an alternative to giving the counterparty (the sender) the full script — you can give them the hash of the script, which is always the same length, and also happens to be the same length as a normal address.
+К счастью, есть альтернатива передаче контрагенту (отправителю) полного скрипта — вы можете передать ему хэш скрипта, который всегда имеет одинаковую длину, причем точно такую же длину, что и обычный адрес.
 
-In 2012, the Pay-to-Script-Hash (P2SH) standard was introduced.^[<https://en.bitcoin.it/wiki/BIP_0016>] These kinds of transactions let you send to a script hash, which is an address beginning with 3, in stead of sending to a public key hash, which is an address beginning with 1.
+В 2012 году был введен стандарт Pay-to-Script-Hash (P2SH).^[<https://en.bitcoin.it/wiki/BIP_0016>] Эти виды транзакций позволяют вам использовать в качестве адреса отправления хэш скрипта (такой адрес должен начинаться с 3), вместо отправки на хэш открытого ключа (такой адрес начинался с 1).
 
-The person on the other end has to copy-paste it, put it in their Bitcoin wallet, and send money to it. Now, when you want to spend that money, you need to reveal the actual script to the blockchain, which your wallet will handle automatically. Because all you need to share is a hash,  the person that’s sending you money doesn’t need to care what this hash actually hides. Only when you spend the coins do you need to reveal the constraints. From a privacy point of view, this is much better than immediately putting the script on the chain. Chapter @sec:taproot_basics will explain how Taproot takes this even further.
+Находящийся на другом конце должен скопипастить этот адрес в свой биткоин-кошелек и отправить на него деньги. Теперь, когда вы хотите потратить эти деньги, вам нужно открыть блокчейну фактический скрипт, который ваш кошелек далее автоматически обработает. Поскольку все, что вам для этого нужно, это хэш, человеку, который отправляет вам деньги, не нужно заботиться о том, что на самом деле скрывается за этим хэшем. Только когда вы тратите монеты, вам нужно раскрыть ограничения. С точки зрения приватности это намного лучше, чем сразу вставлять скрипт в блокчейн. В главе @sec:taproot_basics объясняется, как Taproot идет еще дальше.
 
-Similar to the workflow with regular P2PKH addresses, what you communicate to the sender is just the hash of the script. Before the sender’s wallet puts that on the blockchain, it prepends `OP_HASH160` and appends `OP_EQUAL`. So this is essentially a script within a script. The outer script, which the wallet puts on the blockchain, tells the blockchain there’s an inner script that must be revealed _and satisfied_ by the recipient in order to spend from it.
+Как и в случае с обычными адресами P2PKH, то, что вы сообщаете отправителю - это просто хэш скрипта. Прежде чем кошелек отправителя поместит его в блокчейн, он добавляет в начало OP_HASH160 и в конец OP_EQUAL. Так что это, по сути, скрипт внутри скрипта. Внешний скрипт, который кошелек помещает в блокчейн, сообщает блокчейну, что существует внутренний скрипт, который должен быть раскрыт _и исполнен_ получателем, и тогда с него можно тратить деньги.
 
-This last requirement does not actually follow from the script on the blockchain, which only requires the hash of the script to match. This is why the new P2SH address type came with a soft fork to enforce that when such a script within a script is found, it is also executed. This usually means that the spender doesn’t just put the script on the stack, but also the ingredients necessary to satisfy the script, such as a signature.
+Это последнее требование на самом деле не следует из скрипта в блокчейне, для которого требуется только совпадение хэша скрипта. Вот почему новый тип адреса P2SH появился с софт-форком, чтобы гарантировать, что, когда такой скрипт находится внутри скрипта, он также выполняется. Обычно это означает, что плательщик помещает в стек не только скрипт, но и ингредиенты, необходимые для выполнения скрипта, такие как подпись.
 
 ### Really Absurd Things
 
