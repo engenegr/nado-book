@@ -3,7 +3,7 @@
 
 \EpisodeQR{4}
 
-В этой главе мы поговорим о Miniscript и о том, как он значительно упрощает использование Bitcoin Script. Мы расскажем, как работает Script, как с его помощью можно делать более сложные и даже абсурдные вещи, и как появился Miniscript, чтобы сделать транзакции менее сложными и более безопасными. Кроме того, в главе будет рассказано о том, какова политика этого языка, и как она может упростить создание сценариев.
+В этой главе мы поговорим о Miniscript и о том, как он значительно упрощает использование Bitcoin Script. Мы расскажем, как работает Script, как с его помощью можно делать более сложные и даже абсурдные вещи, и как с целью сделать транзакции менее сложными и более безопасными появился Miniscript. Кроме того, в главе будет рассказано о том, что такое язык для описания политик, и как она может упростить создание скриптов.
 
 ### Ограничения
 
@@ -96,7 +96,7 @@ Script — это язык программирования, который бы
 
 Это было долгое рассуждение о проблемах Script^[Если вам этого мало, посмотрите двухчасовую презентацию Эндрю Поэлстры на London Bitcoin Devs, где он продолжает и продолжает рассказывать о проблемах в Script: <https://www.youtube.com/watch?v=_v1lECxNDiM>], а если вкратце, то: легко сделать ошибки или скрыть ошибки и создать всевозможные сложные механизмы, которые люди могут заметить или не заметить. И тогда ваши деньги уходят туда, куда вы не хотите. Мы уже видели это в других проектах, например, во взломе Ethereum DAO и последующем хард-форке^[<https://ogucluturk.medium.com/the-dao-hack-explained-unfortunate-take-off-of-smart-contracts-2bd8c8db3562>] насколько плохи могут оказаться дела, если у вас очень сложный язык, который делает то, чего вы совсем не ожидаете. Но Биткоин увернулся от многих пуль в первые дни, и, несмотря на его относительную простоту,^[<https://blockstream.com/2018/11/28/en-simplicity-github/>] он по-прежнему требует бдительности.
 
-### Enter Miniscript
+### Внедрение Miniscript
 
 Miniscript^[<https://medium.com/blockstream/miniscript-bitcoin-scripting-3aeff3853620>] — это проект, разработанный несколькими инженерами Blockstream: Питером Вуилле, Эндрю Поэлстрой и Санкетом Канжалкаром. Это «язык для написания (подмножества) биткоин-скриптов в структурированном виде, обеспечивающем анализ, композицию, подписи и многое другое». Вы можете увидеть примеры и попробовать разобраться с ним сами на <https://bitcoin.sipa.be/miniscript>.
 
@@ -118,19 +118,21 @@ Miniscript следит за тем, чтобы в коде не было вся
 
 Miniscript позволяет это проверить. Некий футуристический кошелек может показать вам небольшую круговую диаграмму, говоря: «Вы — это один фрагмент диаграммы, и есть еще один фрагмент, который действительно сложен, но вам не нужно об этом беспокоиться. Он не собирается делать ничего подлого».
 
-### Policy Language
+### Язык политик
 
 A policy language is a way to express your intentions. It’s easier than writing a Miniscript directly, let alone writing Bitcoin Script directly. A compiler then does the hard work.
 
-Our earlier example of a poor man’s multisig was actually found this way. Starting with a policy `and(pk(KEY_A),pk(KEY_B))`, the compiler produced `and_v(v:pk(KEY_A),pk(KEY_B))`, which is equivalent to the script `<KEY_A> OP_CHECKSIGVERIFY <KEY_B> OP_CHECKSIG`. It turns out this actually produces a lower fee transaction than `<KEY_A> <KEY_B> 2 OP_CHECKMULTISIG`. This is the kind of optimization a human might overlook, which is what compilers are good for.
+Язык политик — это способ выразить свои намерения. Это проще, чем писать Miniscript напрямую, не говоря уже о непосредственном написании на Bitcoin Script. Далее тяжелую работу выполняет компилятор.
 
-Basically, you write a policy language, which is like a higher-level programming language, which the compiler turns into low level op codes. These are instructions like the ones we described above for popping things off the stack and duplicating them. Miniscript also lives at that very low level, even if it’s slightly more readable and a lot safer. It’s the compiler’s job to take a high level language like Policy Language and turn into the most efficient low-level code.
+Наш предыдущий пример с мультиподписью для нищих был найден именно с его помощью. Мы изложили политику `and(pk(KEY_A),pk(KEY_B))`, которую компилятор превратил в `and_v(v:pk(KEY_A),pk(KEY_B))`, что эквивалентно скрипту `<KEY_A> OP_CHECKSIGVERIFY <KEY_B> OP_CHECKSIG`. Оказывается, такой скрипт и впрямь производит транзакцию с более низкой комиссией, чем `<KEY_A> <KEY_B> 2 OP_CHECKMULTISIG`. Это тип оптимизации, который человек может не заметить, и именно для этого хороши компиляторы.
 
-In the case of multisig, you might say, “I just want two out of two signatures. I don’t care how you do that.” The compiler knows there are multiple ways to execute the intention. And then, the question is, which of them will be picked? The answer to that depends on the transaction weight and the fees that might be involved.
+По сути, вы пишете на языке политик, который похож на язык программирования более высокого уровня, который компилятор превращает в коды операций низкого уровня. Это инструкции, подобные тем, которые мы описали выше, для извлечения элементов из стека и их дублирования. Miniscript также живет на этом очень низком уровне, даже если он и немного легче читается и намного безопаснее. Задача компилятора — взять язык высокого уровня, такой как язык политик, и превратить его в наиболее эффективный низкоуровневый код.
 
-However, you can also tell the compiler, “OK, I think most of the time it’s condition A, but only 10 percent of the time it’s condition B.” The compiler would then calculate the fee for condition A, multiply by 9, add the fee for condition B and divide the total by 10 in order to get the average expected fee. It can optimize for typical use cases, worst case scenarios, all these things, and it then spits out a Miniscript which can then be transpiled to Bitcoin Script.^[The technical term for going from Miniscript to Script — or for transforming source code from any language into another similar one — is transpiling, which can basically be done in two directions. So you can go from Miniscript to Script, or from Script to Miniscript, but you can’t trivially go back to a policy language. However, using automated analysis tools, you can often still figure out what policy language was used to produce a given piece of Miniscript.]
+В случае мультиподписи вы можете сказать: «Мне просто нужны две подписи из двух. Мне все равно, как ты это сделаешь». Компилятор знает, что есть несколько способов исполнить это намерение. И тогда вопрос лишь в том, который выбрать? Ответ на этот вопрос зависит от веса транзакции и возможных комиссий.
 
-With Taproot (see chapter @sec:taproot_basics), rather than splitting different conditions using _and_ / _or_, they can be split into a Merkle tree of scripts. You don’t have to worry about how to build the Merkle tree, as the compiler takes care of that. In principle, each leaf can also contain _and_ / _or_ statements. Does it make sense to do that? Or is it better to stick to one condition per leaf? Who knows? A future Miniscript compiler can just try all permutations and decide what’s optimal.
+Однако вы также можете сказать компилятору: «Хорошо, я думаю, что в большинстве случаев это условие A, но только в 10% случаев — условие B». Затем компилятор рассчитает комиссию за условие A, умножит на 9, прибавит комиссию за условие B и разделит общую сумму на 10, чтобы получить среднюю ожидаемую комиссию. Он может оптимизировать код для типичных случаев использования, наихудших сценариев и всего такого, а затем выдает Miniscript, который затем можно преобразовать в Bitcoin Script.^[Технический термин для перехода от Miniscript к Bitcoin Script или для преобразования исходного кода любого языка в другой аналогичный — это транспиляция, которая как правило может осуществляться в двух направлениях. Таким образом, вы можете перейти от Miniscript к Script или от Script к Miniscript, но вы не можете столько же легко вернуться к языку политик. Тем не менее, используя инструменты автоматического анализа, вы часто можете выяснить, какой язык политик использовался для создания данного фрагмента Miniscript.]
+
+С помощью Taproot (см. главу @sec:taproot_basics) вместо разделения различных условий с помощью _и_ / _или_ их можно разделить на дерево скриптов Меркла. Вам не нужно беспокоиться о том, как построить дерево Меркла, так как об этом позаботится компилятор. В принципе, каждый лист также может содержать операторы _и_/_или_. Есть ли смысл это делать? Или лучше придерживаться одного условия на лист? Кто знает? Будущий компилятор Miniscript может просто попробовать все перестановки и решить, какая из них оптимальна.
 
 ### Limitations
 
