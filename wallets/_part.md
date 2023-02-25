@@ -1,3 +1,3 @@
-# Better Wallets
+# Улучшенные кошельки
 
-<!-- Intentionally left out, because this part only has one chapter -->
+<!-- Намеренно опущено, поскольку в этой части всего одна глава -->
