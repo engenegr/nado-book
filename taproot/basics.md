@@ -1,9 +1,9 @@
 \newpage
-## Taproot and Schnorr {#sec:taproot_basics}
+## Taproot и подписи Шнорра {#sec:taproot_basics}
 
 \EpisodeQR{2}
 
-In this chapter, we first introduce a Merkle tree that hides all the different spending conditions until they’re used. This is called MAST. Next, we explain how Schnorr signatures allow us to hide the MAST itself, which improves privacy further. We cover earlier proposals for MAST, which didn’t have the benefit of Schnorr, which in turn illustrates the power of Taproot. Finally, we point out some cool things Taproot enables.
+В этой главе мы впервые познакомимся с деревом Меркла, которое скрывает все различные условия расходования монет до тех пор, пока они не будут использованы. Это называется MAST. Далее мы объясним, как подписи Шнорра позволяют нам скрыть сам MAST, что еще больше повышает конфиденциальность. Мы рассмотрим более ранние предложения по MAST, в которых не было преимуществ подписей Шнорра, что, в свою очередь, хорошо иллюстрирует всю мощь Taproot. Наконец, мы отмечаем некоторые интересные вещи, которые позволяет Taproot.
 
 ### Merklized Abstract Syntax Trees
 
