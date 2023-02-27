@@ -1,11 +1,11 @@
 # Taproot {#sec:taproot}
 
-## Overview {.unlisted .unnumbered}
+## Обзор {.unlisted .unnumbered}
 
-This part is all about Taproot: what it is, why it’s interesting, and how it came to be.
+Эта часть посвящена Taproot: что это такое, чем интересно и как появилось.
 
-Taproot is an upgrade to Bitcoin that was proposed in 2018 and deployed in November 2021. This soft fork increases privacy for "smart contracts" and reduces their transaction fees. It achieves this by hiding all the different spending conditions in a Merkle tree and only revealing the one that’s eventually used. It also introduces Schnorr signatures, which make it much easier to compress signatures from multiple participants into a single signature. Both of these things result in less use of precious block space, reduced fees, and improved privacy.
+Taproot — это обновление Биткоина, которое было предложено в 2018 году и развернуто в ноябре 2021 года. Этот софт-форк повышает конфиденциальность «смартконтрактов» и снижает комиссию за транзакции. Это достигается путем скрытия всех различных условий траты в дереве Меркла и отображения только того условия, которое в конечном итоге используется. Оно также внедряет подписи Шнорра, которые значительно упрощают сжатие подписей нескольких участников в одну. Оба этих нововведения приводят к меньшему использованию драгоценного пространства в блоке, снижению комиссий и повышению конфиденциальности.
 
-Chapter @sec:taproot_basics breaks down and explains Taproot^[See also: <https://bitcoinmagazine.com/articles/taproot-coming-what-it-and-how-it-will-benefit-bitcoin>] — covering the building blocks that make Taproot possible — and outlines what it enables Bitcoin to do.
+В главе @sec:taproot_basics объясняет Taproot^[см. также: <https://bitcoinmagazine.com/articles/taproot-coming-what-it-and-how-it-will-benefit-bitcoin>] и раскладывает его по полочкам — показывая все составные части, которые делают возможным использование Taproot - и обрисовывает в общих чертах, что он позволяет делать Биткоину.
 
-Chapter @sec:taproot_activation goes into how the Taproot soft fork was activated and the discussion that went into it.
+В главе @sec:taproot_activation рассказывается о том, как был активирован софтфорк Taproot, и о дискуссиях вокруг него.
