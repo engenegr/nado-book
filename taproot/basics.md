@@ -41,13 +41,9 @@
 
 ### Шнорр {#sec:schnorr}
 
-Chapter @sec:libsecp talks about libsecp256k1, and in May 2021, BIP 340^[Schnorr: <https://en.bitcoin.it/wiki/BIP_0340>] support was merged into libsecp256k1. This added Schnorr signatures to Bitcoin Core.
-
 В главе @sec:libsecp рассказывается о библиотеке libsecp256k1, а в мае 2021 года в нее добавилась поддержка BIP 340^[Шнорр: <https://en.bitcoin.it/wiki/BIP_0340>]. Это добавило в Bitcoin Core подписи Шнорра.
 
 Цифровые подписи Шнорра были впервые созданы немецким математиком Клаусом-Петером Шнорром. Он создал алгоритм подписи Шнорра, который затем запатентовал. Этот алгоритм мог бы очень пригодиться Биткоину, равно как и другим проектам с открытым исходным кодом, которые появились еще раньше, но из-за патента людям пришлось найти другой способ, чтобы воспользоваться преимуществами этих подписей.
-
-So a bunch of lawyers, engineers, and cryptographers joined forces and tried to figure out if there was a way to maim Schnorr’s algorithm so far that it would legally not fall under the patent, but still work. The result was a signature algorithm called Elliptic Curve Digital Signature Algorithm (ECDSA), which is the elliptic curve algorithm that Bitcoin currently uses and that the libsecp library implements. Although both Schnorr and ECSDA use public and private keys to create digital signatures, the latter involves a slightly more complicated process.
 
 Поэтому множество юристов, инженеров и криптографов объединили усилия и попытались выяснить, есть ли способ покалечить алгоритм Шнорра настолько, чтобы он юридически не подпадал под действие патента, но все же работал. Результатом стал алгоритм подписи под названием Алгоритм цифровой подписи на эллиптических кривых (Elliptic Curve Digital Signature Algorithm или ECDSA), который представляет собой алгоритм для той эллиптической кривой, которую сейчас использует Биткоин и который реализуется в библиотеке libsecp. Хотя оба алгоритма - и Шнорра, и ECSDA - используют открытые и закрытые ключи для создания цифровых подписей, последний подразумевает несколько более сложный процесс.
 
@@ -65,28 +61,28 @@ So a bunch of lawyers, engineers, and cryptographers joined forces and tried to 
 
 ### Но почему Шнорр?
 
-Simplicity is great, but all the hard work for the more complicated ECDSA had already been done. Why bother changing things? Even before Taproot, people wanted to add Schnorr because of all the things it enabled. But at some point, Bitcoin Core contributor and former Blockstream CTO Gregory Maxwell came up with a clever way of using Schnorr in combination with MAST.
+Простота — это здорово, но вся тяжелая работа по более сложной ECDSA уже сделана. Зачем утруждаться, что-то меняя? Еще до Taproot люди хотели добавить алгоритм Шнорра ради всех его возможностей. Но однажды участник Bitcoin Core и бывший технический директор Blockstream Грегори Максвелл придумал умный способ использования подписей Шнорра в сочетании с MAST.
 
-Basically, because you can add anything to a public key, you can also add a script to a public key, because a script is essentially just a number and a private key is essentially just a number, and numbers can be added. Converting an elliptic curve private key to a public key also happens to be commutative. That let’s you do this:
+По сути, поскольку вы можете добавить к открытому ключу что угодно, вы также можете добавить к нему скрипт, потому что скрипт — это, по сути, просто число, и закрытый ключ — это тоже просто число, а числа можно добавлять. Преобразование закрытого ключа в открытый ключ при помощи эллиптической кривой также оказывается коммутативным. Это означает вот что:
 
 ```
 public_key(private key + hash) ==
 public_key(private_key) + public_key(hash)
 ```
 
-Let’s now use an example of a backup system that you’d need in case you forget your private key. You start out with two keys: a primary key and a backup key. You keep your primary key on a very secure and tamperproof hardware wallet at home. Your backup key could be a note in a remote safe. If your house burns down, or if the hardware bricked itself after three incorrect PIN attempts, or if it’s stolen, you effectively lose the primary private key. So you’d fetch your backup key.
+Давайте теперь рассмотрим в качестве примера систему резервного копирования, которая вам понадобится, если вы забудете свой закрытый ключ. На старте у вас два ключа: первичный ключ и резервный ключ. Вы храните свой первичный ключ в очень безопасном и защищенном от несанкционированного доступа аппаратном кошельке дома. Резервный ключ может быть, скажем, записан на бумажке в удаленном сейфе. Если ваш дом сгорит, или если аппаратный кошелек заблокируется после трех неправильных попыток ввода PIN-кода, или если он будет украден, вы фактически потеряете первичный закрытый ключ. И тогда вы просто используете свой резервный ключ.
 
-The backup key is what goes _in_ the MAST. If you never use it, nothing on the blockchain will indicate that you even have this backup. Under normal circumstances, you’d only use the primary key without revealing the MAST or the backup key in it.
+Резервный ключ — это то, что _входит в MAST_. Если вы никогда его не используете, ничто в блокчейне не выдаст, что у вас есть резервный ключ. В обычных обстоятельствах вы бы использовали только первичный ключ, не раскрывая MAST или резервный ключ в нем.
 
-But how does this hiding of the MAST work? Well that’s where Schnorr comes in. Schnorr lets you take this MAST and hide it inside your public key. Your wallet adds the root hash of the MAST to your private key, and then it calculates the corresponding, tweaked, public key. That tweaked key is what you put on the blockchain. To the outside world, it looks like any old public key.
+Но как работает это сокрытие MAST? А вот тут-то и появляется алгоритм Шнорра. Шнорр позволяет вам взять этот MAST и спрятать его внутри вашего открытого ключа. Ваш кошелек добавляет корневой хэш MAST к вашему закрытому ключу, а затем вычисляет соответствующий измененный открытый ключ. Этот измененный ключ — вы как раз и помещаете в блокчейн. Для внешнего мира это выглядит как самый обычный открытый ключ.
 
-And then, when you sign an actual transaction, you sign for this tweaked public key. Anyone else doesn’t see any difference between a tweaked public key and one that isn’t tweaked; they’re both perfectly valid public keys. Again, whether or not you tweaked your public key with this MAST structure, it looks the same to the rest of the world.
+И затем, когда вы подписываете фактическую транзакцию, вы ставите подпись для на этого измененного открытого ключа. Никто другой не видит никакой разницы между измененным открытым ключом и исходным; они оба - полностью валидные открытые ключи. Опять же, вне зависимости от того, изменили ли вы свой открытый ключ с помощью структуры MAST, он выглядит для остального мира совершенно однотипно.
 
-Only when you need to use your backup key is it time to reveal the MAST structure. Instead of using the tweaked key in your transaction, you reveal the original untweaked key, and you reveal the script (or one of your scripts, if you have a more complicated setup with more scripts in the tree).
+Лишь когда вам нужно использовать свой резервный ключ, приходит время раскрыть структуру MAST. Вместо использования измененного ключа в вашей транзакции вы раскрываете исходный ключ и раскрываете скрипт (или один из скриптов, если у вас более сложная настройка с большим количеством скриптов в дереве).
 
-Then, any person verifying, i.e. everyone who runs a full node, will take that script, calculate the hash, and add it up to the public key. They’ll see that this matches the tweaked key that was already on the blockchain, which proves you didn’t just make up a new script. The new script reveals to the world what your backup public key is, and they’ll check if your signature was indeed made using the private key for that public key.
+Затем любой проверяющий, то есть каждый, кто запускает полный узел, возьмет этот скрипт, рассчитает хэш и добавит его к открытому ключу. Увидев, что результат соответствует измененному ключу, который уже был в блокчейне, проверяющий убедится, что вы не просто создали новый скрипт. Новый скрипт открывает миру ваш резервный открытый ключ, и владелец полной ноды проверяет, действительно ли ваша подпись была сделана с использованием закрытого ключа именно для этого открытого ключа.
 
-Using this approach of a public key tweaked with a MAST is very space efficient. It improves privacy overall, because there’s no difference between transactions that pay to an individual with a simple single-key wallet and those that pay to an exchange with a super fancy multi-signature setup. It all looks the same, unless any of the backup conditions are used.
+Использование подхода с открытым ключом, настроенным с помощью MAST, очень эффективно использует пространство. Также это улучшает конфиденциальность в целом, потому что нет никакой разницы между персональными переводами с помощью простого кошелька с одним ключом, и транзакциями, которые отправляют монеты на биржу с супер-причудливой настройкой с несколькими подписями. Все выглядит одинаково, пока не используются какие-либо резервные условия.
 
 In the earlier example of you and your mom, if you accept Bitcoin with your mom this way, the first step is for the two of you to combine your public keys.^[The art of combining public keys and making joint signatures deserves a chapter of its own. It’s an important feature that Schnorr enables. But Taproot doesn’t do this for you. That’s up to wallet software and this is still a work in progress. The MuSig2 protocol is the latest proposal for how future wallet software can do this in a provably secure manner: <https://eprint.iacr.org/2020/1261>] Next, you generate a MAST with at least one leaf: the script specifying that after two years, you can spend the coins alone.^[It might also contain a second leaf that allows you and your mom to bypass the MuSig2 protocol and instead provide two individual signatures. This isn’t as good in terms of privacy, and it incurs higher fees, but it’s easier in some circumstances.]
 
