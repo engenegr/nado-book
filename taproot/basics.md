@@ -82,48 +82,48 @@ public_key(private_key) + public_key(hash)
 
 Затем любой проверяющий, то есть каждый, кто запускает полный узел, возьмет этот скрипт, рассчитает хэш и добавит его к открытому ключу. Увидев, что результат соответствует измененному ключу, который уже был в блокчейне, проверяющий убедится, что вы не просто создали новый скрипт. Новый скрипт открывает миру ваш резервный открытый ключ, и владелец полной ноды проверяет, действительно ли ваша подпись была сделана с использованием закрытого ключа именно для этого открытого ключа.
 
-Использование подхода с открытым ключом, настроенным с помощью MAST, очень эффективно использует пространство. Также это улучшает конфиденциальность в целом, потому что нет никакой разницы между персональными переводами с помощью простого кошелька с одним ключом, и транзакциями, которые отправляют монеты на биржу с супер-причудливой настройкой с несколькими подписями. Все выглядит одинаково, пока не используются какие-либо резервные условия.
+Использование подхода с открытым ключом, настроенным с помощью MAST, очень эффективно использует пространство. Также это улучшает конфиденциальность в целом, потому что нет никакой разницы между персональными переводами с помощью простого кошелька с одним ключом, и транзакциями, которые отправляют монеты на биржу, имеющую супер-причудливую настройку мультиподписи. Все выглядит одинаково, пока не используются какие-либо резервные условия.
 
-In the earlier example of you and your mom, if you accept Bitcoin with your mom this way, the first step is for the two of you to combine your public keys.^[The art of combining public keys and making joint signatures deserves a chapter of its own. It’s an important feature that Schnorr enables. But Taproot doesn’t do this for you. That’s up to wallet software and this is still a work in progress. The MuSig2 protocol is the latest proposal for how future wallet software can do this in a provably secure manner: <https://eprint.iacr.org/2020/1261>] Next, you generate a MAST with at least one leaf: the script specifying that after two years, you can spend the coins alone.^[It might also contain a second leaf that allows you and your mom to bypass the MuSig2 protocol and instead provide two individual signatures. This isn’t as good in terms of privacy, and it incurs higher fees, but it’s easier in some circumstances.]
+В вышеприведенном примере про вас и вашу маму, если вы намерены применить новый подход для получения биткоинов, первым шагом для вас двоих будет объединение ваших открытых ключей.^[Искусство объединения открытых ключей и создания совместных подписей заслуживает отдельной главы. Именно эту важную функцию обеспечивают подписи Шнорра. Но Taproot этого сам за вас не сделает. Вам придется полагаться на ПО вашего кошелька, и эти решения еще вырабатываются. Последнее предложение о том, как программное обеспечение будущего кошелька может делать это доказуемо безопасным образом - это протокол MuSig2: <https://eprint.iacr.org/2020/1261>]. Затем вы создаете MAST, по крайней мере, с одним листом: скриптом, указывающим, что через два года вы можете потратить монеты в одиночку.^[Дерево также может содержать второй лист, который позволит вам и вашей маме обойти протокол MuSig2 и вместо этого предоставить две отдельные подписи. Это не настолько хорошо с точки зрения конфиденциальности и требует более высоких комиссий, но в некоторых обстоятельствах так проще.]
 
-Under normal circumstances, when you want to spend some coins, you call your mom and produce a joint signature. The coin you spend from specifies the public key, which has been tweaked with the MAST Merkle root. So you tweak your private key before producing a signature with it. What you publish will look like a regular signature for everyone else (because it is).
+В обычных обстоятельствах, когда вы хотите потратить несколько монет, вы звоните маме и ставите совместную подпись. Для монет, которые вы тратите, указывается открытый ключ, к которому был добавлен корень MAST. Таким образом, вы корректируете свой закрытый ключ, прежде чем создавать с его помощью подпись. То, что вы публикуете, для всех остальных будет выглядеть как обычная подпись (потому что так оно и есть).
 
-However, if there’s a scenario where one of you can’t sign and those two years go by, at the end you can reveal that it was actually a tweaked public key.^[Under the hood, every Taproot spend involves a tweaked key, using an empty MAST if there are no script leafs.] The rest of the world can look at that and say, “Yep. That adds up. The math makes total sense. That was what you were always doing; we just never were able to see it. Yep, two years have passed, so you’re allowed to spend this money now on your own.”
+Однако, если все пошло по пути, когда один из вас не может поставить подпись, и прошли те самые два года, в итоге вы можете продемонстрировать, что этот открытый ключ был скорректированным.^[Под капотом каждой траты с использованием Taproot оказывается скорректированный ключ, и даже если листья с различными скриптами отсутствуют, она все равно использует MAST, пусть даже пустой] Остальному миру остается только посмотреть на происходящее и сказать: «Ага. Все складывается. Математика полностью корректна. Вы с самого начала подразумевали именно это, просто у нас не было возможности ранее это увидеть. Ладушки, два года прошли, так что теперь тебе разрешено тратить эти деньги по своему усмотрению».
 
-As a result, the condition is only revealed if you actually use it. Otherwise, it’ll be a secret forever, unless somebody hacks your wallet.
+В результате условие раскрывается только в том случае, если вы действительно его используете. В противном случае оно навсегда останется секретом, если только кто-нибудь не взломает ваш кошелек.
 
-The ability to have multiple conditions and only reveal one of those conditions is what MAST enables. The ability to combine public keys with other keys and hashes is what Schnorr enables.^[<https://bitcoinmagazine.com/articles/the-power-of-schnorr-the-signature-algorithm-to-increase-bitcoin-s-scale-and-privacy-1460642496>]. But, this magic is combined, like Captain Planet, and now you can hide the MAST.
+Возможность иметь несколько условий и раскрывать только одно из них — это то, что позволяет MAST. Возможность комбинировать открытые ключи с другими ключами и хэшами — это то, что позволяют подписи Шнорра.^[<https://bitcoinmagazine.com/articles/the-power-of-schnorr-the-signature-algorithm-to-increase-bitcoin-s-scale-and-privacy-1460642496>]. Но эта магия совмещена, как у Капитана Планеты, и теперь MAST можно спрятать.
 
-### Earlier MASTs
+### Предшествующие предложения MAST
 
-To appreciate Taproot even more, let’s take a brief excursion back in time.
+Чтобы еще больше оценить Taproot, давайте совершим короткую экскурсию в прошлое.
 
-The first MAST proposal, BIP 114,^[MAST: <https://en.bitcoin.it/wiki/BIP_0114>] introduced a new SegWit version. It offered privacy benefits similar to the Taproot Merkle tree proposal, and it only revealed the spending condition or script that was used.
+Первое предложение MAST, BIP 114, ^[MAST: <https://en.bitcoin.it/wiki/BIP_0114>] представило новую версию SegWit. Оно было призвано обеспечить преимущества конфиденциальности, аналогичные предложению Taproot, и раскрывало только использованное условие расходов или скрипт.
 
-Instead of introducing a new SegWit version, the second MAST proposal, BIP 116,^[`MERKLEBRANCHVERIFY`: <https://en.bitcoin.it/wiki/BIP_0116>] added a new opcode, `MERKLEBRANCHVERIFY`, to the existing script system. While the privacy was the same, the implementation varied.
+Вместо введения новой версии SegWit второе предложение MAST, BIP 116, ^[`MERKLEBRANCHVERIFY`: <https://en.bitcoin.it/wiki/BIP_0116>] добавило новый опкод `MERKLEBRANCHVERIFY` к существующей системе скриптов. Хотя конфиденциальность получалась одинаковой, реализация менялась.
 
-However, there are downsides to both of these earlier MAST proposals:
+Однако у обоих этих более ранних предложений MAST есть недостатки:
 
-1. As soon as you spend it, everyone can see that a MAST tree existed, even if they can’t see the full contents of the tree.
-2. In the case where everyone agrees, you can’t just ignore the script and put signatures on the chain: You still have to pick a “we all agree” script from the MAST tree and satisfy it, which uses precious blockchain bytes.
+1. Как только вы потратите монеты, все поймут, что MAST существовало, даже если и не могут увидеть полное содержимое дерева.
+2. В случае, когда все согласны, вы не можете просто игнорировать скрипт и поместить подписи в блокчейн: вам все равно нужно выбрать скрипт «мы все согласны» из дерева MAST и выполнить это условие, что тратит драгоценные байты блокчейна.
+ 
+Прикрепляя корень MAST к открытому ключу Шнорра, вы, как было показано выше, решаете эти проблемы.
 
-By tapping the MAST root onto a Schnorr public key, so to speak, you fix these issues, as explained above.
+### Погодите, есть кое-что еще…
 
-### But Wait, There’s More…
+Помимо того, что некоторые вещи, которые вы можете делать с помощью Taproot, уже были технически возможны (но очень сложны), есть и такое, что только Taproot и делает возможными.
 
-While it’s true that some of the things you can do with Taproot were already technically possible (but more complicated), there are also some things Taproot unlocks.
+Например, подписи M-из-N, так называемые мультиподписи, теперь можно реализовывать без скрипта, поскольку Taproot обеспечивает протоколы их объединения. При помощи пороговых подписей в ECDSA это было возможно и раньше,^[<https://eprint.iacr.org/2020/1390.pdf>], но, как и все до Шнорра, было очень сложно, а теперь стало несколько проще.
 
-For example, M-of-N signatures, or multi signatures, can now be done without a script, because Taproot enables protocols for combining them. This was possible before with threshold signatures in ECDSA,^[<https://eprint.iacr.org/2020/1390.pdf>], but like everything before Schnorr, it was complicated, and now it’s slightly easier.
+Для внешнего мира пороговая подпись выглядит как один открытый ключ и одна подпись. Для подписей M-из-M, например. 2-из-2, можно использовать алгоритм MuSig2. Для более общего M-oиз-N рекомендуемого алгоритма пока нет. Это не проблема, потому что алгоритм объединения ключей и подписей не нужно встраивать в протокол; протокол Биткоина просто должен поддерживать алгоритм Шнорра. Когда кто-то решит объединить подписи как-то иначе, результат будет выглядеть как единая подпись — не только для людей, но и для узлов. При этом могут быть проверены и отдельные подписи.
 
-To the outside world, a threshold signature looks like a single public key and a single signature. For M-of-M signatures, e.g. 2-of-2, the MuSig2 algorithm can be used. For the more general M-of-N, there’s no recommended algorithm yet. This isn’t a problem, because the algorithm for combining keys and signatures doesn’t need to be baked into the protocol; the Bitcoin protocol just needs to support Schnorr. When someone comes up with a new way to combine signatures, the result will look like a single signature — not just to humans, but also to nodes. And single signatures can be verified.
+Еще одна интересная вещь, которую можно сделать при помощи Taproot - это увеличение приватности в сети Lightning,^[<https://lightning.network/>], платежном протоколе второго уровня. Платежи через Lightning включают в себя передачу хэша, который одинаков для всех промежуточных переходов. Это потенциальная проблема конфиденциальности, потому что некто, имеющий доступ ко многим узлам в сети, может реконструировать маршрут, по которому проходил данный платеж. С помощью алгоритма Шнорра эти хэши можно заменить точками эллиптической кривой, которые будут для каждого перехода.^[<https://bitcoinops.org/en/topics/ptlc/>]
 
-Another cool feature is how Taproot can make the Lightning network,^[<https://lightning.network/>] which is a layer 2 payment protocol, more private. Payments on Lightning involve passing a hash around, which is the same for all intermediate hops. This is a potential privacy concern, because someone with access to many nodes on the network could reconstruct the route a given payment took. With Schnorr, these hashes can be replaced with elliptic curve points that are different for each hop.^[<https://bitcoinops.org/en/topics/ptlc/>]
+Кроме того, Lightning использует каналы, которые представляют собой монеты, защищенные двумя подписями, а с помощью Taproot:
 
-Additionally, Lightning uses channels, which are coins protected by two signatures, and with Taproot:
+1. Эти две подписи можно объединить в одну (например, с помощью MuSig2).
+2. Скрипты, которые Lightning использует для обеспечения хорошего поведения, могут быть скрыты в MAST, чтобы быть раскрытыми только в случае ненадлежащего поведения.
 
-1. Those two signatures can be combined into one signature (e.g. using MuSig2).
-2. The scripts Lightning uses to enforce good behavior can be hidden in the MAST, only to be revealed in the case of misbehavior.
+Другими словами, если обе стороны канала соглашаются на операцию, для посторонних это выглядит как обычная транзакция. Но если они не приходят к согласию, есть много дополнительных условий тайм-аута, которые можно красиво спрятать внутри MAST.
 
-In other words, if both sides of the channel agree on an operation, it looks like a normal transaction to outsiders. But if they disagree, there are a lot of additional timeout conditions, which can be nicely hidden inside the MAST.
-
-However, most people won’t necessarily notice much of a difference, except that privacy will be slightly better. As these advanced options come along, they’ll use them but not notice them. That said, taking advantage of this functionality makes things cheaper, easier, and more private.
+Однако большинство людей не обязательно заметят большую разницу, за исключением того, что конфиденциальность станет немного лучше. По мере появления всех этих расширенных опций они будут использовать их, но не придавать большого значения. Тем не менее, использование этого нового функционала делает использование биткоина дешевле, проще и более конфиденциальным.
