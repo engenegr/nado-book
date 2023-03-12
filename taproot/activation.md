@@ -1,27 +1,31 @@
 \newpage
-## Activation Options {#sec:taproot_activation}
+## Варианты активации {#sec:taproot_activation}
 
 \EpisodeQR{3}
 
-The Taproot soft fork was activated on November 13, 2021, approximately one year after the finalized code was merged.^[<https://github.com/bitcoin/bitcoin/pull/19953>] It happened much more quickly than SegWit did, and with far less drama, but it wasn’t an uneventful year. This chapter discusses how soft forks were activated in the past, what options were considered for Taproot, and how Taproot was finally activated.
+Софтфорк Taproot был активирован 13 ноября 2021 года, примерно через год после появления окончательной редакции кода.^[<https://github.com/bitcoin/bitcoin/pull/19953>] Это произошло куда быстрее, чем активация SegWit, и куда менее драматично, но этот год не был совсем уж лишен событий. В этой главе рассказывается, как софтфорки активировались в прошлом, какие варианты активации рассматривались для Taproot и как он все-таки был активирован.
 
 We dedicated five episodes to this topic, and the QR codes are placed at various points in this chapter. However, it’s far from a one-to-one mapping; they’re not even in chronological order.
 
-### Soft Forks: A Primer
+Мы посвятили этой теме пять эпизодов, и соответствующие QR-коды размещены в разных частях этой главы. Однако это далеко не однозначное сопоставление; ссылки приведены даже не в хронологическом порядке.
 
-As Taproot’s deployment grew close, the question of how to activate soft forks once again became a topic of debate in the Bitcoin community.
+### Софтфорки: введение
+
+По мере приближения развертывания Taproot вопрос о том, как активировать софт-форки, снова стал предметом дискуссий в биткоин-сообществе.
 
 Soft forks, if you recall, are changes to the protocol that are backward compatible. In other words, anyone who has upgraded will reap the benefits of new changes, but those who don’t upgrade will still find their software working.
 
-In addition to introducing new features, a soft fork can be used to get rid of bugs and potential vulnerabilities — at least, some of them. The way this is done is by making the rules stricter, but without suddenly freezing anybody’s coins.
+Софтфорки, если вы помните — это обратно совместимые изменения протокола. Другими словами, любой, кто обновился, будет пользоваться преимуществами, которые дает обновление, но те, кто не обновится, все равно останутся с корректно работающим софтом.
 
-A simple example of such stricter rules is BIP 66,^[<https://en.bitcoin.it/wiki/BIP_0066>] which mandated that any new signatures had to conform to a strict standard, whereas there was previously some (unintended) flexibility in how to encode signatures.^[<https://technicaldifficulties.io/2020/07/22/bip-66-unpacking-der-signatures/>]
+Помимо внедрения новых функций, софтфорк можно использовать для избавления от багов и потенциальных уязвимостей — по крайней мере, от некоторых из них. Это делается путем ужесточения правил, но без внезапной заморозки чьих-либо монет.
 
-It may seem paradoxical that strict rules allow for _more_ features, but in chapter @sec:segwit, under the future SegWit versions section, we explained why this works. In this chapter, we’re less concerned with how soft forks work, and instead we focus on how they’re activated.
+Простым примером таких более строгих правил является BIP 66,^[<https://en.bitcoin.it/wiki/BIP_0066>], который требует, чтобы любые новые подписи соответствовали строгому стандарту, в то время как ранее существовала некоторая (непреднамеренная) гибкость в способах кодирования подписей.^[<https://technicaldifficulties.io/2020/07/22/bip-66-unpacking-der-signatures/>]
 
-There are a few different ways to introduce a soft fork. You can do it randomly by accident, or you can deliberately sneak one into the code. You can also announce a date (known as a flag day) or block height from which the new rules apply. Finally — and this is how things currently work — you can have miners signal and have the soft fork activate once a certain threshold is reached.
+Может показаться парадоксальным, что строгие правила допускают _больше_ возможностей, но в главе @sec:segwit, в разделе про будущие версии SegWit, мы объяснили, почему это работает. В текущей главе нас меньше интересует, как работают софтфорки, и вместо этого мы сосредоточимся на том, как их активируют.
 
-But perhaps what matters more than the mechanics of activation is how a decision is reached to deploy the soft fork in the first place. And who decides anyway?
+Есть несколько разных способов внедрить софтфорк. Можно сделать это случайным образом, а можно внедрить его в код намеренно. Также можно объявить дату (так называемый день флага) или высоту блока, начиная с которой применяются новые правила. Наконец — и именно так это обычно сейчас работает — можно получать сигналы от майнеров и активировать софтфорк, как только будет достигнут определенный порог.
+
+Но то, как принимается решение о развертывании софтфорка, возможно, даже важнее, чем механика активации. А кто вообще решает?
 
 ### The Earliest Soft Forks
 
