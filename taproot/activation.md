@@ -5,15 +5,11 @@
 
 Софтфорк Taproot был активирован 13 ноября 2021 года, примерно через год после появления окончательной редакции кода.^[<https://github.com/bitcoin/bitcoin/pull/19953>] Это произошло куда быстрее, чем активация SegWit, и куда менее драматично, но этот год не был совсем уж лишен событий. В этой главе рассказывается, как софтфорки активировались в прошлом, какие варианты активации рассматривались для Taproot и как он все-таки был активирован.
 
-We dedicated five episodes to this topic, and the QR codes are placed at various points in this chapter. However, it’s far from a one-to-one mapping; they’re not even in chronological order.
-
 Мы посвятили этой теме пять эпизодов, и соответствующие QR-коды размещены в разных частях этой главы. Однако это далеко не однозначное сопоставление; ссылки приведены даже не в хронологическом порядке.
 
 ### Софтфорки: введение
 
 По мере приближения развертывания Taproot вопрос о том, как активировать софт-форки, снова стал предметом дискуссий в биткоин-сообществе.
-
-Soft forks, if you recall, are changes to the protocol that are backward compatible. In other words, anyone who has upgraded will reap the benefits of new changes, but those who don’t upgrade will still find their software working.
 
 Софтфорки, если вы помните — это обратно совместимые изменения протокола. Другими словами, любой, кто обновился, будет пользоваться преимуществами, которые дает обновление, но те, кто не обновится, все равно останутся с корректно работающим софтом.
 
@@ -27,15 +23,15 @@ Soft forks, if you recall, are changes to the protocol that are backward compati
 
 Но то, как принимается решение о развертывании софтфорка, возможно, даже важнее, чем механика активации. А кто вообще решает?
 
-### The Earliest Soft Forks
+### Самые ранние софтфорки
 
-Although the term didn’t yet exist in the early days, there were many soft forks, mostly related to closing security holes in the early prototype.^[<https://blog.bitmex.com/bitcoins-consensus-forks/>] In 2013, there was even an accidental soft fork, and in 2015, there was a near-miss accidental soft fork due to OpenSSL changes (see chapter @sec:libsecp).
+Хотя на заре Биткоина этого термина еще не существовало, у него было много софтфорков, в основном связанных с закрытием дыр в безопасности у раннего прототипа.^[<https://blog.bitmex.com/bitcoins-consensus-forks/>] В 2013 году произошел даже случайный софтфорк, а в 2015-м случился случайный софтфорк, который едва не пропал из-за изменений OpenSSL (см. главу @sec:libsecp).
 
-The earliest soft forks mostly used a block height as their method of activation — in other words, “as of this future block, the new rule shall apply.” Ideally this is announced well in advance, giving people plenty of time to upgrade. For a “secret” soft fork, developers might simply insist that people upgrade and then explain the reason afterward.
+Самые ранние софтфорки в основном использовали в качестве метода активации высоту блока  — другими словами, «начиная с вот этого будущего блока должно применяться новое правило». В идеале об этом объявляют заблаговременно, чтобы у людей было достаточно времени для обновления. В случае «секретного» софтфорка разработчики могли просто настаивать на том, чтобы люди обновлялись, а уже затем объяснять причину.
 
-![Informal diagram of a flag height-activated soft fork](taproot/flag.svg){ width=50% }
+![Неофициальная диаграмма софтфорка, активируемого по флагу на определенной высоте блока](taproot/flag.svg){ width=50% }
 
-<!-- Manually adjust width to font size roughly matches-->
+<!-- Отрегулируйте ширину вручную, чтобы примерно совпадал размер шрифта -->
 
 Probably the most infamous soft fork of all time is the one-megabyte block size limit introduced by Satoshi in 2010.^[Since the very first release of version 0.1.0 on January 9, 2009, there has been a 32MB limit (`MAX_SIZE`) that applies to various things. This includes the block size, which was checked in `CheckBlock()`. See <https://satoshi.nakamotoinstitute.org/code/>. Then, on July 15, 2010, Satoshi introduced `MAX_BLOCK_SIZE=1000000` and changed the miner software to not produce blocks larger than that in <https://github.com/bitcoin/bitcoin/commit/a30b56ebe76ffff9f9cc8a6667186179413c6349>. So far, no soft fork. It was just a change to the software used by miners, which they could’ve reverted without producing invalid blocks. Months later, on September 7, he modified a related function, `AcceptBlock()`, to enforce `MAX_BLOCK_SIZE` <https://github.com/bitcoin/bitcoin/commit/f1e1fb4bdef878c8fc1564fa418d44e7541a7e83>. This was the actual soft fork, and it was released the same day in v0.3.12. Both commits pretended to do completely unrelated things. Nowadays, code reviewers frown upon commits that touch anything outside the area they claim to change — even if just removing a blank line.] The soft fork was released on September 7, 2010, and its `activation_height` was set to 79,400, which occurred just a week later.^[<https://bitcointalk.org/index.php?topic=999.msg12181>].
 
