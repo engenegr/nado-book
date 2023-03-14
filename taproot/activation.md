@@ -63,8 +63,6 @@
 
 Помимо отсутствия неотвеченных возражений, также необходимо привлечь достаточно опытных разработчиков для рассмотрения предложения. Таких разработчиков очень немного, и отсутствие энтузиазма у них может привести к тому, что прекрасный софтфорк никогда не увидит свет. Или, что чаще, отсутствие энтузиазма у рецензента в сочетании с трудноразрешимыми техническими проблемами будет держать предложение в подвешенном состоянии.
 
-But if all goes well and the code ends up merged into the Bitcoin Core software, there’s still the matter of what activation procedure to apply. This is subject to the same kind of rough consensus discussion as a proposal; people may love a proposed soft fork but object to a flag day activation for all the reasons explained above. To avoid scenarios where proposals get stuck in a discussion about their activation, ideally the community agrees on a single activation mechanism that’s applied for every soft fork. But, well, that turns out to be a challenge.
-
 Но если все пойдет хорошо и код предложения в конечном итоге будет объединен с кодом Bitcoin Core, остается вопрос, какую применить процедуру активации. Это происходит в рамках такого же процесса приблизительного консенсуса, как и обсуждение самого предложения; людям может понравиться предлагаемый софтфорк, но они, по всем вышеописанным причинам, будут возражать против активации в конкретную дату. Чтобы избежать ситуаций, когда предложения застревают в ходе обсуждения их активации, в идеале сообщество соглашается на единый механизм активации, который применяется для всех софтфорков. Но, конечно, это тоже серьезная проблема для сообщества.
 
 ### Signaling (BIP 9)
