@@ -81,9 +81,9 @@
 
 BIP 9 успешно использовался для развертывания софтфорков CSV и SegWit, и его можно было бы использовать и для Taproot. Первое развертывание прошло гладко, но, как мы вскоре увидим, второе вызвало много скандалов и заняло гораздо больше времени, чем многие считали нужным. Это привело к опасениям, что, возможно, BIP 9 это не самый надежный механизм развертывания. ^[Использование временных меток вместо высоты блока также выглядело излишним усложнением ситуации.] В результате было предложено несколько других механизмов, а также их вариации.
 
-### Always Verify Blocks!
+### Всегда проверяйте блоки!
 
-Unfortunately, no amount of signaling is useful when miners don’t actually enforce the new rules. Remember that we need the majority of miners, i.e. the longest chain, to enforce the new rules to protect non-upgraded nodes (which in turn allows these upgrades to remain non-mandatory).
+К сожалению, любое сигнализирование бесполезно, если на самом деле майнеры не применяют новые правила. Помните, что для того, чтобы обеспечить соблюдение новых правил для защиты необновленных узлов, нам нужно большинство майнеров, то есть самая длинная цепочка (что, в свою очередь, позволяет этим обновлениям оставаться необязательными).
 
 During the BIP 66 soft fork in 2015, it turned out that a large portion of miners, despite signaling readiness, weren’t verifying the new rules.^[<https://www.reddit.com/r/Buttcoin/comments/6dvkr6/short_writeup_of_the_bip66_disaster_is_this/>] As soon a transaction that violated the new rules appeared in a block, those miners failed to reject it and instead kept building on top of it.^[<https://bitcoin.org/en/alert/2015-07-04-spv-mining#cause>] At the same time, the miners that upgraded and checked the new rules did reject the block. They produced an alternative, valid block at the same height and kept building on top of that new branch. Eventually, their new branch overtook the invalid branch, causing the non-verifying miners to switch over to the valid branch. The first time, the invalid chain branched off for six blocks. The next day, it happened again, but only for three blocks, perhaps because more miners upgraded their software as they became aware of the problem.
 
