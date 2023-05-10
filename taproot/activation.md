@@ -218,69 +218,69 @@ _Если вы запустите узел, у которого включена
 
 Наконец, стоит отметить, что все проблемы, с которыми сталкиваются пользователи `LOT=false` в мире, где есть клиенты с `LOT=true`, также встречаются у пользователей, которые вообще не обновляли софт. Так что стоит подумать и об отказе от обязательных обновлений.
 
-### `LOT=true` Client, Rogue?
+### Клиент с`LOT=true` - не вредоносное ли это ПО?
 
 \EpisodeQR{36}
 
-This time around, the first software download release with the Taproot activation code wasn’t Bitcoin Core. Instead, two developers decided to independently release a modified version of Bitcoin Core, which included BIP 8 and the `LOT=true` behavior.^[<https://www.reddit.com/r/Bitcoin/comments/mruopv/bitcoincorebased_bip8_lottrue_taproot_activation/>]
+На этот раз первым релизом софта с кодом активации Taproot был не Bitcoin Core. Вместо этого два разработчика решили выпустить независимую модифицированную версию Bitcoin Core, которая включала BIP 8 с параметром `LOT=true`.^[<https://www.reddit.com/r/Bitcoin/comments/mruopv/bitcoincorebased_bip8_lottrue_taproot_activation/>]
 
 \noindent
-With open source software, anyone is free to release any variation of the software they want. Similarly, everyone is free to download whichever variation they want. However, in addition to the general objections to `LOT=true` above, there are other practical matters to think about when downloading such an alternative implementation. We cover these in the episode above. In particular, it’s important to make sure you’re not accidentally downloading malware (see chapter @sec:guix).
+В мире opensource каждый может выпускать любую версию программного обеспечения, которую захочет. Точно так же каждый может бесплатно загрузить себе любой вариант, который он хочет. Однако, в дополнение к общим возражениям против `LOT=true` выше, есть и другие практические вопросы, о которых следует подумать при загрузке такой альтернативной реализации. Мы рассказали об этом выше. В частности, важно убедиться, что вы случайно не загружаете вредоносное ПО (см. главу @sec:guix).
 
-### The Speedy Trial Proposal
+### Предложение пробного быстрого запуска
 
 \EpisodeQR{31}
 
-To get out of this stalemate, Speedy Trial came to the rescue. It proposed^[<https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2021-March/018583.html>] the following: “Rather than discussing whether or not there’s going to be signaling and having lots of arguments about it, let’s just try it quickly.” The proposed timeline^[<https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2021-March/018594.html>] suggested the signaling would start in early May, last three months (until August), and then be activated three months later, in November.
+Чтобы выйти из этого тупика, на помощь пришло предложение о пробном быстром запуске. Было предложено^[<https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2021-March/018583.html>] следующее: «Вместо того, чтобы обсуждать, сигнализировать или нет, и приводить множество аргументов на эту тему, давайте просто по-быстрому попробуем запустить новинку. Предложенный график^[<https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2021-March/018594.html>] предполагал, что сигнализирование начнется в начале мая, продлится три месяца (до августа), а затем через три месяца, в ноябре, произойдет активация.
 
-Spoiler: As we mentioned at the beginning of the chapter, Taproot indeed activated on November 13, 2021.
+Спойлер: как мы и упоминали в начале главы, Taproot действительно был активирован 13 ноября 2021 года.
 
-![Speedy trial flow.](taproot/speedy_trial.svg)
+![Схема пробного быстрого запуска.](taproot/speedy_trial.svg)
 
-The diagram above is quite simple to understand. Compared to BIP 9 above, it only introduces one new concept: a minimum activation height. This adds a delay in the transition from `LOCKED_IN` to `ACTIVE`.
+Эта схема довольно проста для понимания. По сравнению с BIP 9, разобранным выше, вводится только одна новая концепция: минимальная высота активации. Это добавляет задержку при переходе от `ЗАБЛОКИРОВАНО` к `АКТИВИРОВАНО`.
 
-Although it’s conceptually almost the same as BIP 9, the dates picked for Taproot are quite different than what would’ve been picked before. The waiting period before signaling (`DEFINED`), as well as the signaling period (`STARTED`), are much shorter than usual (months instead of a full year). This way, we could know the result faster.
+Хотя концептуально это почти то же самое, что и BIP 9, даты, выбранные для Taproot, сильно отличаются от тех, которые были выбраны ранее. Период ожидания перед сигнализированием (`ОПРЕДЕЛЕНО`), а также период сигнализирования (`ЗАПУЩЕНО`) намного короче, чем обычно (месяцы вместо полного года). Таким образом, мы могли бы определиться с результатом быстрее.
 
-Knowing the result quickly is great, but the rush runs the risk of miners using fake signals rather than actually upgrading. So to add a margin of safety, the transition from `LOCKED_IN` to `ACTIVE` was increased from the usual single period (two weeks) to a fixed block height, which was expected to be reached in November 2021. That was the only code change required (a much smaller change than BIP 8).
+Быстро узнать результат — это здорово, но спешка может привести к тому, что майнеры станут использовать поддельные сигналы вместо того, чтобы обновляться. Таким образом, чтобы добавить запас прочности, переход от `ЗАБЛОКИРОВАНО` к `АКТИВИРОВАНО` был увеличен с обычного однократного периода (две недели) до фиксированной высоты блока, которой предполагалось достичь в ноябре 2021 года. Это было единственное требуемое изменение в коде (гораздо меньшее изменение, чем внедрение BIP 8).
 
-So the “speedy” part refers to figuring out miner readiness, or at least to figuring out if there was any previously unknown miner objection, or just apathy. The rest of the process was slower, and it behaved a bit more like a flag day. Once the signal threshold was reached, the soft fork was set in stone, meaning it would happen, at least if people ran the full nodes.
+Таким образом, «быстрая» часть относится к выяснению готовности майнеров или, по крайней мере, к выяснению того, нет ли у майнеров каких-то не высказанных ранее возражений или просто апатии. Остальная часть процесса была медленнее и больше походила на День Д. Как только порог по проценту сигнализирующих окажется достигнут, софт-форк будет высечен в камне, то есть будет предположительно состоявшимся, по крайней мере, если люди запустят полные узлы с новым ПО.
 
-This process made it so Taproot would activate six months after the initial release of the software, assuming 90 percent of miners were signaling. If that threshold wasn’t met, the proposal would’ve expired, and activation options would’ve been discussed more, albeit with more data to back up decision making.
+Запуск этого процесса привел бы к активирации Taproot через шесть месяцев после выпуска софта, при условии, что 90 процентов майнеров сигнализировали бы о его поддержке. Если бы этот порог не был достигнут, срок действия предложения истек бы, и варианты активации обсуждались бы дольше, хотя и с наличием на старте большего количества данных для обоснования принимаемых решений.
 
-Speedy Trial seemed to sufficiently address the objections to BIP 9. From the objectors’ point of view, because it was so fast, their own plans for BIP 8 wouldn’t be delayed.
+Пробный быстрый запуск, казалось, в достаточной степени снял возражения против BIP 9. С точки зрения возражающих, из-за того, что все было так быстро, их собственные планы относительно BIP 8 не требовалось откладывать.
 
-With the controversy (temporarily) out of the way, more developers came out of the woodwork and started writing code that could actually get Speedy Trial done.^[Mainly <https://github.com/bitcoin/bitcoin/pull/21377>, <https://github.com/bitcoin/bitcoin/pull/21686>, and a BIP 8-based alternative that was briefly considered: <https://github.com/bitcoin/bitcoin/pull/21392>] In turn, because there were more developers from different angles cooperating on it and getting things done a little bit more quickly, it demonstrated that Speedy Trial was a good idea. When you have some disagreement, then people start procrastinating, not reviewing things, or not writing things. But if people begin working on something quickly and it’s making progress, that’s a vague indicator that it was a good choice.
+Когда разногласия (временно) прекратились, многие разработчики прекратили препирательства и принялись писать код, который бы реализовывал пробный быстрый запуск.^[В основном рассматривались варианты <https://github.com/bitcoin/bitcoin/pull/21377>, <https://github.com/bitcoin/bitcoin/pull/21686>, и альтернатива, основанная на BIP 8: <https://github.com/bitcoin/bitcoin/pull/21392>] Соответственно, поскольку при написании кода сотрудничало больше разработчиков с разными подходами, и процесс двигался несколько быстрее, это продемонстрировало, что пробный быстрый запуск был хорошей идеей. Когда у вас возникают какие-то разногласия, люди начинают прокрастинировать, вместо того, чтобы писать свой код или рецензировать чужой. Но если люди начинают работать над чем-то быстро, и все продвигается вперед, это косвенный показатель того, что сам по себе выбор решения был хорош.
 
-### We Have Taproot `LOCKED_IN`!
+### И вот Taproot уже на этапе `ЗАФИКСИРОВАНО`!
 
 \EpisodeQR{40}
 
-Bitcoin Core v0.21.1 with the Speedy Trial code was released on May 1, 2021.^[<https://bitcoincore.org/en/2021/05/01/release-0.21.1/>]
+Bitcoin Core v0.21.1 с кодом пробного быстрого запуска был выпущен 1 мая 2021 года.^[<https://bitcoincore.org/en/2021/05/01/release-0.21.1/>]
 
 \noindent
-The first retargeting period started a week before that release on April 24, 2021, and the threshold wasn’t reached. The second retargeting period also didn’t reach the threshold, but the third time was a charm. The 90 percent signaling threshold was reached on June 12, 2021, with `LOCKED_IN` happening a few days later.^[<https://sports.yahoo.com/locked-bitcoin-taproot-upgrade-gets-120837972.html>] It lasted until the November activation.
+Первый период ретаргетинга начался за неделю до этого релиза, 24 апреля 2021 года, и порог не был достигнут. Второй период ретаргетинга тоже не обеспечил порога, а вот третий оказался чудесен. 90-процентный порог сигнализирования был достигнут 12 июня 2021 года, а через несколько дней статус стал `ЗАФИКСИРОВАНО`.^[<https://sports.yahoo.com/locked-bitcoin-taproot-upgrade-gets-120837972.html>] Он оставался таковым до ноябрьской активации.
 
-Remember that the signal for a soft fork (BIP 9, BIP 8, or Speedy Trial) is just a bit flag in the block header. Miners can and do use custom software to set this bit. At the same time, miners run full nodes that actually enforce the consensus rules. But if they don’t upgrade their own nodes, then their outdated nodes will simply ignore the flag, and their nodes won’t enforce the new rules. For that to happen, they need to actually upgrade their node software.
+Вспомним, что сигнал для софт-форка (BIP 9, BIP 8 или пробный быстрый запуск) — это просто битовый флаг в заголовке блока. Для установки этого бита майнеры используют отдельный софт. В то же время майнеры запускают полные узлы, которые уже на практике обеспечивают соблюдение правил консенсуса. Но если они не обновят свои собственные узлы, то узлы, будучи устаревшими, просто проигнорируют флаг, и не будут применять новые правила. Чтобы применять их, майнерам нужно на самом деле обновить программное обеспечение своего узла.
 
-In general, it’s preferred if miners actually upgrade their nodes and don’t fake signal. That’s one reason why the timeout in BIP 9 was so long. But because Speedy Trial happened on such short notice, some may have considered it too risky to upgrade their software. Others ran into practical issues performing the upgrade. Mining pool operator Alejandro De La Torre described some of the practical issues he encountered in the field on a podcast episode.^[<https://stephanlivera.com/episode/277/>]
+В целом, желательно, чтобы майнеры действительно обновляли свои узлы и не подделывали сигнал. Это одна из причин, почему время ожидания в BIP 9 было таким долгим. Но из-за того, что быстрый пробный запуск прошел в такой короткий срок, некоторые могли посчитать обновление своего софта слишком рискованным. Другие столкнулись с практическими проблемами при обновлении. Оператор майнингового пула Алехандро Де Ла Торре описал некоторые практические проблемы, с которыми он столкнулся в полевых условиях, в эпизоде подкаста.^[<https://stephanlivera.com/episode/277/>]
 
-The accompanying episode goes into further detail about what, once Taproot activation became inevitable, needed to happen before it could ultimately be used on the Bitcoin network safely. We also explain how upcoming Bitcoin Core releases will handle the Taproot upgrade, especially with respect to its wallet software. At the time of writing, there’s some basic Taproot wallet support, but it’s still a work in progress.
+В соответствующем разделе более подробно рассказывается о том, что должно было произойти, как только активация Taproot стала неизбежной, прежде чем его можно было бы и впрямь безопасно использовать в сети Биткоина. Мы также объясняем, как будущие версии Bitcoin Core будут работать с обновлениями Taproot, особенно в отношении кода кошелька. На момент написания статьи существует некоторая базовая поддержка кошелька Taproot, но она все еще находится в стадии разработки.
 
-### Moving Forward
+### Двигаемся дальше
 
-Because Speedy Trial was successful, it’s possible we can use it as a template for soft fork activation moving forward. Or, we could interpret the lack of drama as an argument to just stick with BIP 9 or a `LOT=false` version of BIP 8. Perhaps some aspects of `LOT=true` deployment can be made safer.
+Поскольку быстрый пробный запуск прошел успешно, возможно, мы сможем использовать такой способ в качестве шаблона для активации софт-форков в будущем. Или мы могли бы интерпретировать отсутствие драмы как аргумент в пользу того, чтобы просто придерживаться `BIP 9` или версии BIP 8 с `LOT = false`. Возможно, некоторые аспекты развертывания `LOT = true` можно сделать более безопасными.
 
-Even if it’s inherently unsafe, it could make sense to continue developing it further, having the code already in place in case it’s ever needed. Perhaps the Bitcoin Core software could have generic support for it, even if the project itself recommends against using it. The best time to think about such matters is when they’re not yet needed.
+Даже если такой механизм небезопасен по своей сути, может иметь смысл продолжить его разработку, имея уже готовый код на случай, если он когда-нибудь понадобится. Возможно, софт Bitcoin Core мог бы иметь его общую поддержку, даже если сам проект не рекомендует его использовать. Лучшее время для размышлений о таких вещах — это когда они еще не нужны.
 
-### Burying Soft Forks
+### Захоронение софтфорков
 
 \EpisodeQR{54}
 
-After all is said and done and a soft fork has activated, what do you do with the activation code? Is it merely a scaffold that can be removed once the new rules are active? Or is the activation mechanism itself a permanent part of the rules?
+После того, как все сказано и сделано, и софт-форк активирован, что делать с кодом активации? Это просто строительные леса, которые можно убрать, когда новые правила вступят в силу? Или сам механизм активации является постоянной частью правил?
 
 \noindent
-As was done with previous soft forks, it looks like a future Bitcoin Core release will “bury” the Taproot activation. This means the node will treat the Taproot rules as if they’ve been active since Bitcoin’s very beginning. This is possible because, when applying these rules retroactively, only one historical block does not conform to them. This block can be grandfathered in.^[<https://github.com/bitcoin/bitcoin/pull/23536>]
+Как и в случае с предыдущими софтфорками, похоже, что будущий выпуск Bitcoin Core «похоронит» активацию Taproot. Это означает, что узел будет относиться к правилам Taproot так, как если бы они были активны с самого начала существования Биткоина. Это возможно, потому что при ретроактивном применении этих правил им не соответствует только один исторический блок. Этот блок может быть унаследован.^[<https://github.com/bitcoin/bitcoin/pull/23536>]
 
-In the episode we explain what the benefits are of burying a soft fork, in particular pointing out how it helps developers when they review the Bitcoin Core codebase or when they perform tests on it.
+В этом разделе мы объясняем, в чем преимущества захоронения софтфорка, в частности, указываем, как это помогает разработчикам, когда они анализируют кодовую базу Bitcoin Core или когда проводят ее тестирование.
 
-After that, we outline a potential edge case scenario where burying soft forks could, in a worst-case scenario, split the Bitcoin blockchain between upgraded and non-upgraded nodes. Bitcoin Core developers generally don’t consider this edge case — a very long block re-org — to be a realistic problem and/or believe that this would be such a big problem that a buried soft fork would be a minor concern comparatively. However, as we explain, not everyone agrees with this assessment entirely.
+После этого мы обрисовываем потенциальный пограничный сценарий, когда захоронение софт-форков может, в худшем случае, разделить блокчейн Биткоина между обновленными и необновленными узлами. Разработчики Bitcoin Core, как правило, не рассматривают этот пограничный случай — очень длинную реорганизацию блока — как реальную проблему и/или считают, что это будет настолько серьезной проблемой, что скрытый софт-форк будет относительно незначительной ее частью. Однако, как мы поясняем, не все полностью согласны с этой оценкой.
